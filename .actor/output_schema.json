@@ -1,0 +1,26 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Newsletter Digest Scraper Output",
+    "properties": {
+        "overview": {
+            "type": "string",
+            "title": "All Items",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=overview"
+        },
+        "articles": {
+            "type": "string",
+            "title": "Articles",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=articles"
+        },
+        "events": {
+            "type": "string",
+            "title": "Events",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=events"
+        },
+        "webhookPayload": {
+            "type": "string",
+            "title": "Webhook Payload",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/WEBHOOK_PAYLOAD"
+        }
+    }
+}

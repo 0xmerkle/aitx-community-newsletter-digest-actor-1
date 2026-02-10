@@ -1,0 +1,79 @@
+{
+    "title": "Newsletter Digest Scraper Input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "rssFeedUrl": {
+            "title": "RSS Feed URL",
+            "type": "string",
+            "description": "URL of the RSS feed to scrape articles from",
+            "editor": "textfield",
+            "example": "https://hnrss.org/newest"
+        },
+        "additionalUrls": {
+            "title": "Additional URLs",
+            "type": "array",
+            "description": "Additional article URLs to scrape",
+            "editor": "requestListSources",
+            "default": [],
+            "prefill": []
+        },
+        "lumaEventUrls": {
+            "title": "Lu.ma Event URLs",
+            "type": "array",
+            "description": "Lu.ma calendar URLs to scrape events from",
+            "editor": "stringList",
+            "default": ["https://lu.ma/austin", "https://lu.ma/houston"],
+            "prefill": ["https://lu.ma/austin", "https://lu.ma/houston"]
+        },
+        "meetupCities": {
+            "title": "Meetup Cities",
+            "type": "array",
+            "description": "Cities to search for Meetup events",
+            "editor": "json",
+            "default": [
+                { "city": "austin", "state": "tx" },
+                { "city": "houston", "state": "tx" }
+            ],
+            "prefill": [
+                { "city": "austin", "state": "tx" },
+                { "city": "houston", "state": "tx" }
+            ]
+        },
+        "meetupKeywords": {
+            "title": "Meetup Keywords",
+            "type": "string",
+            "description": "Keywords to filter Meetup events",
+            "editor": "textfield",
+            "default": "AI",
+            "example": "AI"
+        },
+        "meetupMaxResultsPerCity": {
+            "title": "Meetup Max Results Per City",
+            "type": "integer",
+            "description": "Maximum number of Meetup events to retrieve per city",
+            "editor": "number",
+            "default": 15,
+            "minimum": 1,
+            "maximum": 100,
+            "unit": "events"
+        },
+        "maxArticles": {
+            "title": "Max Articles",
+            "type": "integer",
+            "description": "Maximum number of articles to scrape (applies to RSS + additional URLs combined)",
+            "editor": "number",
+            "default": 50,
+            "minimum": 0,
+            "unit": "articles"
+        },
+        "useProxies": {
+            "title": "Use Proxies",
+            "type": "boolean",
+            "description": "Use residential proxies for Lu.ma scraping (recommended to avoid blocking)",
+            "editor": "checkbox",
+            "default": true
+        }
+    },
+    "required": ["rssFeedUrl"]
+}

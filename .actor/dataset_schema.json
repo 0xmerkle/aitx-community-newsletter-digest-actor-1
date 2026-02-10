@@ -1,0 +1,80 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "type": "object",
+        "properties": {
+            "type": { "type": "string", "description": "Item type discriminator: 'article' or 'event'" },
+            "headline": { "type": "string", "description": "Article headline" },
+            "title": { "type": "string", "description": "Event title" },
+            "url": { "type": "string", "description": "URL of the article or event" },
+            "text_content": { "type": "string", "description": "Full text content of the article" },
+            "description": { "type": "string", "description": "Short description or summary" },
+            "published_date": { "type": "string", "description": "Article published date (ISO)" },
+            "source_name": { "type": "string", "description": "Name of the article source" },
+            "start_date": { "type": "string", "description": "Event start date" },
+            "start_time": { "type": "string", "description": "Event start time" },
+            "end_date": { "type": "string", "description": "Event end date" },
+            "end_time": { "type": "string", "description": "Event end time" },
+            "location": { "type": "string", "description": "Event location address" },
+            "venue_name": { "type": "string", "description": "Event venue name" },
+            "city": { "type": "string", "description": "Event city" },
+            "state": { "type": "string", "description": "Event state" },
+            "is_virtual": { "type": "boolean", "description": "Whether the event is virtual" },
+            "source": { "type": "string", "description": "Event source: 'lu.ma' or 'meetup.com'" },
+            "scraped_at": { "type": "string", "description": "Timestamp when the item was scraped (ISO)" }
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "All Items",
+            "description": "All scraped articles and events",
+            "transformation": {
+                "fields": [
+                    "type", "headline", "title", "url", "description",
+                    "published_date", "source_name", "start_date", "start_time",
+                    "location", "city", "state", "source", "scraped_at"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "type": { "label": "Type" },
+                    "url": { "label": "URL", "format": "link" }
+                }
+            }
+        },
+        "articles": {
+            "title": "Articles",
+            "description": "Scraped articles from RSS feeds and additional URLs",
+            "transformation": {
+                "fields": [
+                    "headline", "url", "text_content", "description",
+                    "published_date", "source_name", "scraped_at"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "url": { "label": "URL", "format": "link" }
+                }
+            }
+        },
+        "events": {
+            "title": "Events",
+            "description": "Scraped events from Lu.ma and Meetup",
+            "transformation": {
+                "fields": [
+                    "title", "url", "description", "start_date", "start_time",
+                    "end_date", "end_time", "location", "venue_name",
+                    "city", "state", "is_virtual", "source", "scraped_at"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "url": { "label": "URL", "format": "link" }
+                }
+            }
+        }
+    }
+}

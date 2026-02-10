@@ -1,0 +1,19 @@
+{
+    "actorSpecification": 1,
+    "name": "aitx-newsletter-digest-scraper-demo",
+    "title": "AITX Newsletter Digest Scraper (Demo)",
+    "description": "Demo Actor for the AITX Community Newsletter Pipeline. Scrapes articles from RSS feeds and direct URLs, and events from Lu.ma and Meetup, outputting a unified dataset. This is Actor 1 of a 2-actor pipeline demo built with Claude Code.",
+    "version": "0.1",
+    "meta": {
+        "templateId": "ts-crawlee-playwright-chrome",
+        "generatedBy": "Claude Code with Claude Opus 4.6",
+        "purpose": "Demo of a multi-actor newsletter pipeline for the AI/TX community",
+        "pipeline": "Actor 1 of 2 — data collection and scraping stage"
+    },
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile"
+}
