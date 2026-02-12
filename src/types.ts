@@ -24,16 +24,21 @@ export interface EventData {
     type: 'event';
     title: string;
     url: string;
+    source: string;
+    scraped_at: string;
     description?: string;
     start_date?: string;
     start_time?: string;
     end_date?: string;
     end_time?: string;
+    timezone?: string;
     location?: string;
     venue_name?: string;
     city?: string;
     state?: string;
+    region?: string;
+    host_name?: string;
+    guest_count?: number;
+    is_free?: boolean;
     is_virtual?: boolean;
-    source: string;
-    scraped_at: string;
 }

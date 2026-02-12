@@ -11,16 +11,21 @@
             "description": { "type": "string", "description": "Short description or summary" },
             "published_date": { "type": "string", "description": "Article published date (ISO)" },
             "source_name": { "type": "string", "description": "Name of the article source" },
-            "start_date": { "type": "string", "description": "Event start date" },
+            "source": { "type": "string", "description": "Event source: 'luma' or 'meetup.com'" },
+            "start_date": { "type": "string", "description": "Event start date/time (ISO)" },
             "start_time": { "type": "string", "description": "Event start time" },
-            "end_date": { "type": "string", "description": "Event end date" },
+            "end_date": { "type": "string", "description": "Event end date/time (ISO)" },
             "end_time": { "type": "string", "description": "Event end time" },
-            "location": { "type": "string", "description": "Event location address" },
+            "timezone": { "type": "string", "description": "Event timezone (e.g. America/Chicago)" },
+            "location": { "type": "string", "description": "Event full address" },
             "venue_name": { "type": "string", "description": "Event venue name" },
             "city": { "type": "string", "description": "Event city" },
             "state": { "type": "string", "description": "Event state" },
-            "is_virtual": { "type": "boolean", "description": "Whether the event is virtual" },
-            "source": { "type": "string", "description": "Event source: 'lu.ma' or 'meetup.com'" },
+            "region": { "type": "string", "description": "Event region (e.g. Texas)" },
+            "host_name": { "type": "string", "description": "Event host name" },
+            "guest_count": { "type": "integer", "description": "Number of guests/RSVPs" },
+            "is_free": { "type": "boolean", "description": "Whether the event is free" },
+            "is_virtual": { "type": "boolean", "description": "Whether the event is virtual/online" },
             "scraped_at": { "type": "string", "description": "Timestamp when the item was scraped (ISO)" }
         }
     },
@@ -31,15 +36,18 @@
             "transformation": {
                 "fields": [
                     "type", "headline", "title", "url", "description",
-                    "published_date", "source_name", "start_date", "start_time",
-                    "location", "city", "state", "source", "scraped_at"
+                    "published_date", "source_name", "source", "start_date",
+                    "timezone", "location", "city", "region", "host_name",
+                    "guest_count", "is_free", "scraped_at"
                 ]
             },
             "display": {
                 "component": "table",
                 "properties": {
                     "type": { "label": "Type" },
-                    "url": { "label": "URL", "format": "link" }
+                    "url": { "label": "URL", "format": "link" },
+                    "guest_count": { "label": "Guests", "format": "number" },
+                    "is_free": { "label": "Free", "format": "boolean" }
                 }
             }
         },
@@ -64,15 +72,17 @@
             "description": "Scraped events from Lu.ma and Meetup",
             "transformation": {
                 "fields": [
-                    "title", "url", "description", "start_date", "start_time",
-                    "end_date", "end_time", "location", "venue_name",
-                    "city", "state", "is_virtual", "source", "scraped_at"
+                    "title", "url", "source", "start_date", "end_date",
+                    "timezone", "location", "venue_name", "city", "region",
+                    "host_name", "guest_count", "is_free", "is_virtual", "scraped_at"
                 ]
             },
             "display": {
                 "component": "table",
                 "properties": {
-                    "url": { "label": "URL", "format": "link" }
+                    "url": { "label": "URL", "format": "link" },
+                    "guest_count": { "label": "Guests", "format": "number" },
+                    "is_free": { "label": "Free", "format": "boolean" }
                 }
             }
         }

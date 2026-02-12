@@ -9,14 +9,19 @@ export const DEFAULT_MEETUP_MAX_RESULTS_PER_CITY = 15;
 export const DEFAULT_MAX_ARTICLES = 50;
 export const DEFAULT_USE_PROXIES = true;
 
+// Lu.ma Discover API place IDs
+export const LUMA_PLACE_IDS: Record<string, string> = {
+    austin: 'discplace-0tPy8KGz3xMycnt',
+    'austin-ai': 'discplace-0tPy8KGz3xMycnt',
+    houston: 'discplace-aQeJaEtqg3shHZ1',
+    'houston-ai': 'discplace-aQeJaEtqg3shHZ1',
+};
+
 // Timeouts
 export const HTTP_TIMEOUT = 60000;
-export const BROWSER_TIMEOUT = 90000;
-export const BROWSER_NAVIGATION_TIMEOUT = 90;
 
 // Concurrency
 export const HTTP_CONCURRENCY = 10;
-export const BROWSER_CONCURRENCY = 1;
 
 // Text selectors (ordered by priority)
 export const TEXT_SELECTORS = [

@@ -21,7 +21,7 @@
         "lumaEventUrls": {
             "title": "Lu.ma Event URLs",
             "type": "array",
-            "description": "Lu.ma calendar URLs to scrape events from",
+            "description": "Lu.ma city page URLs. The slug (e.g. 'austin' from lu.ma/austin) is mapped to a Discover API place ID to fetch events.",
             "editor": "stringList",
             "default": ["https://lu.ma/austin", "https://lu.ma/houston"],
             "prefill": ["https://lu.ma/austin", "https://lu.ma/houston"]
@@ -70,7 +70,7 @@
         "useProxies": {
             "title": "Use Proxies",
             "type": "boolean",
-            "description": "Use residential proxies for Lu.ma scraping (recommended to avoid blocking)",
+            "description": "Use proxies for web scraping (Lu.ma uses a direct API and does not need proxies)",
             "editor": "checkbox",
             "default": true
         }
