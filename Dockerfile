@@ -25,7 +25,7 @@ RUN npm --quiet set progress=false \
     && rm -r ~/.npm
 
 # Copy built JS files from builder image
-COPY --from=builder /home/myuser/dist ./dist
+COPY --from=builder /usr/src/app/dist ./dist
 
 # Copy remaining source files
 COPY --chown=myuser:myuser . ./
