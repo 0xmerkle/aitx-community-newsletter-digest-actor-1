@@ -80,4 +80,3 @@ Connected to Apify via GitHub integration. Every push to `main` triggers an auto
 ## Related
 
 - **Actor 2:** [aitx-community-newsletter-synthesizer-actor-2](https://github.com/0xmerkle/aitx-community-newsletter-synthesizer-actor-2) — Filters, enriches, and generates the newsletter draft
-- **Blog post:** [How I built a two-Actor newsletter pipeline that saves me 3 hours every week](LINK_TO_BLOG_POST)
