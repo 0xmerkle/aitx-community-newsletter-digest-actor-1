@@ -1,65 +1,83 @@
-## PlaywrightCrawler template
+# AITX Newsletter Digest Scraper
 
-<!-- This is an Apify template readme -->
+An [Apify Actor](https://apify.com/actors) that scrapes AI news articles and events from multiple sources for the [AITX Community](https://aitx.beehiiv.com) weekly newsletter.
 
-This template is a production ready boilerplate for developing an [Actor](https://apify.com/actors) with `PlaywrightCrawler`. Use this to bootstrap your projects using the most up-to-date code.
+## What it does
 
-> We decided to split Apify SDK into two libraries, Crawlee and Apify SDK v3. Crawlee will retain all the crawling and scraping-related tools and will always strive to be the best [web scraping](https://apify.com/web-scraping) library for its community. At the same time, Apify SDK will continue to exist, but keep only the Apify-specific features related to building Actors on the Apify platform. Read the upgrading guide to learn about the changes.
+Collects content from three sources and normalizes everything into a single Apify Dataset:
 
-## Resources
+- **RSS feeds** — Scrapes article URLs with [CheerioCrawler](https://crawlee.dev/api/cheerio-crawler), falls back to RSS description for paywalled content
+- **Lu.ma events** — Fetches events from Austin and Houston via Lu.ma's discover API (no browser needed)
+- **Meetup events** — Calls the [Meetup Scraper](https://apify.com/filip_cicvarek/meetup-scraper) from the Apify Store via `Actor.call()`
 
-If you're looking for examples or want to learn more visit:
+## Pipeline
 
-- [Crawlee + Apify Platform guide](https://crawlee.dev/docs/guides/apify-platform)
-- [Documentation](https://crawlee.dev/api/playwright-crawler/class/PlaywrightCrawler) and [examples](https://crawlee.dev/docs/examples/playwright-crawler)
-- [Node.js tutorials](https://docs.apify.com/academy/node-js) in Academy
-- [Scraping single-page applications with Playwright](https://blog.apify.com/scraping-single-page-applications-with-playwright/)
-- [How to scale Puppeteer and Playwright](https://blog.apify.com/how-to-scale-puppeteer-and-playwright/)
-- [Integration with Zapier](https://apify.com/integrations), Make, GitHub, Google Drive and other apps
-- [Video guide on getting scraped data using Apify API](https://www.youtube.com/watch?v=ViYYDHSBAKM)
-- A short guide on how to build web scrapers using code templates:
+This Actor is the first half of a two-Actor pipeline. When it completes, a webhook triggers the [Newsletter Synthesizer](https://github.com/0xmerkle/aitx-community-newsletter-synthesizer-actor-2) with the Dataset ID.
 
-[web scraper template](https://www.youtube.com/watch?v=u-i-Korzf8w)
+    Actor 1 (this repo)          Actor 2
+    ┌──────────────────┐         ┌──────────────────────┐
+    │ Scrape RSS       │         │ Filter with Claude AI │
+    │ Fetch Lu.ma API  │──webhook──▶│ Enrich Lu.ma events  │
+    │ Call Meetup Actor │         │ Query Notion          │
+    │ Normalize + push │         │ Generate draft        │
+    └──────────────────┘         └──────────────────────┘
 
+## Input
 
-## Getting started
+| Field | Type | Description |
+|-------|------|-------------|
+| `rssFeedUrl` | string | RSS feed URL to scrape articles from |
+| `meetupCities` | array | Cities to search for Meetup events (default: Austin + Houston) |
+| `meetupMaxResultsPerCity` | number | Max Meetup results per city (default: 10) |
+| `maxArticles` | number | Max articles to fetch from RSS |
+| `useProxies` | boolean | Use residential proxies (default: true) |
 
-For complete information [see this article](https://docs.apify.com/platform/actors/development#build-actor-locally). To run the Actor use the following command:
+## Output
 
-```bash
-apify run
+Items pushed to the default Dataset with a `type` field:
+
+**Articles** (`type: "article"`):
+```json
+{
+    "type": "article",
+    "headline": "Texas AI startup raises $50M Series B",
+    "url": "https://...",
+    "text_content": "Full article text...",
+    "source_name": "techcrunch.com",
+    "scraped_at": "2026-02-20T10:00:00.000Z"
+}
 ```
 
-## Deploy to Apify
+**Events** (`type: "event"`):
+```json
+{
+    "type": "event",
+    "source": "luma",
+    "title": "AITX Monthly Meetup",
+    "url": "https://lu.ma/aitx-feb26",
+    "start_date": "2026-02-24T23:30:00.000Z",
+    "end_date": "2026-02-25T01:30:00.000Z",
+    "location": "800 Brazos St #340, Austin, TX 78701",
+    "city": "Austin",
+    "host_name": "AITX Community",
+    "guest_count": 45,
+    "is_free": true
+}
+```
 
-### Connect Git repository to Apify
+## Local development
 
-If you've created a Git repository for the project, you can easily connect to Apify:
+```bash
+npm install
+npm run start:dev    # Run locally with Apify CLI
+npm run build        # TypeScript compile check
+```
 
-1. Go to [Actor creation page](https://console.apify.com/actors/new)
-2. Click on **Link Git Repository** button
+## Deployment
 
-### Push project on your local machine to Apify
+Connected to Apify via GitHub integration. Every push to `main` triggers an automatic build and deploy.
 
-You can also deploy the project on your local machine to Apify without the need for the Git repository.
+## Related
 
-1. Log in to Apify. You will need to provide your [Apify API Token](https://console.apify.com/account/integrations) to complete this action.
-
-    ```bash
-    apify login
-    ```
-
-2. Deploy your Actor. This command will deploy and build the Actor on the Apify Platform. You can find your newly created Actor under [Actors -> My Actors](https://console.apify.com/actors?tab=my).
-
-    ```bash
-    apify push
-    ```
-
-## Documentation reference
-
-To learn more about Apify and Actors, take a look at the following resources:
-
-- [Apify SDK for JavaScript documentation](https://docs.apify.com/sdk/js)
-- [Apify SDK for Python documentation](https://docs.apify.com/sdk/python)
-- [Apify Platform documentation](https://docs.apify.com/platform)
-- [Join our developer community on Discord](https://discord.com/invite/jyEM2PRvMU)
+- **Actor 2:** [aitx-community-newsletter-synthesizer-actor-2](https://github.com/0xmerkle/aitx-community-newsletter-synthesizer-actor-2) — Filters, enriches, and generates the newsletter draft
+- **Blog post:** [How I built a two-Actor newsletter pipeline that saves me 3 hours every week](LINK_TO_BLOG_POST)
