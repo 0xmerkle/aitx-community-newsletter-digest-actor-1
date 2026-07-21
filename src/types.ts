@@ -42,4 +42,6 @@ export interface EventData {
     guest_count?: number;
     is_free?: boolean;
     is_virtual?: boolean;
+    /** Topic/category tags from the source platform (e.g. Lu.ma "AI" category, Meetup topics) */
+    categories?: string[];
 }

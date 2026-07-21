@@ -116,6 +116,10 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
                     state: item.state || item.venue?.state || cityEntry.state,
                     description: item.description || item.snippet || item.eventDescription,
                     is_virtual: Boolean(item.isVirtual || item.is_virtual || item.isOnline || item.eventType === 'ONLINE'),
+                    categories: Array.isArray(item.topics)
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        ? item.topics.map((t: any) => t?.name).filter(Boolean)
+                        : undefined,
                     source: 'meetup.com',
                     scraped_at: new Date().toISOString(),
                 };
