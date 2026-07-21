@@ -4,7 +4,7 @@ export const DEFAULT_MEETUP_CITIES = [
     { city: 'austin', state: 'tx' },
     { city: 'houston', state: 'tx' },
 ];
-export const DEFAULT_MEETUP_KEYWORDS = 'AI';
+export const DEFAULT_MEETUP_KEYWORDS = 'AI, machine learning, data science';
 export const DEFAULT_MEETUP_MAX_RESULTS_PER_CITY = 15;
 export const DEFAULT_MAX_ARTICLES = 50;
 export const DEFAULT_USE_PROXIES = true;
@@ -16,6 +16,11 @@ export const LUMA_PLACE_IDS: Record<string, string> = {
     houston: 'discplace-aQeJaEtqg3shHZ1',
     'houston-ai': 'discplace-aQeJaEtqg3shHZ1',
 };
+
+// How many upcoming events to pull per Lu.ma place. Over-fetch on purpose:
+// the synthesizer filters aggressively and needs enough candidates to
+// guarantee its minimum event count.
+export const LUMA_PAGINATION_LIMIT = 50;
 
 // Timeouts
 export const HTTP_TIMEOUT = 60000;

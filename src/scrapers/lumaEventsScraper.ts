@@ -1,6 +1,6 @@
 import { Actor, log } from 'apify';
 
-import { LUMA_PLACE_IDS } from '../config.js';
+import { LUMA_PAGINATION_LIMIT, LUMA_PLACE_IDS } from '../config.js';
 import type { ActorInput, EventData } from '../types.js';
 
 /** Response shape from the Lu.ma Discover API */
@@ -66,6 +66,8 @@ export async function scrapeLumaEvents(input: ActorInput): Promise<number> {
     }
 
     let totalEvents = 0;
+    const seenPlaceIds = new Set<string>();
+    const seenEventIds = new Set<string>();
 
     for (const lumaUrl of input.lumaEventUrls) {
         const slug = extractSlugFromUrl(lumaUrl);
@@ -76,13 +78,26 @@ export async function scrapeLumaEvents(input: ActorInput): Promise<number> {
             continue;
         }
 
+        // Multiple slugs can map to the same place (e.g. "austin" and "austin-ai")
+        if (seenPlaceIds.has(placeId)) {
+            log.info(`Lu.ma: Place ID for "${slug}" already fetched, skipping`);
+            continue;
+        }
+        seenPlaceIds.add(placeId);
+
         try {
             log.info(`Lu.ma: Fetching events via API for "${slug}"...`, { placeId });
-            const entries = await fetchLumaDiscoverEvents(placeId);
+            const entries = await fetchLumaDiscoverEvents(placeId, LUMA_PAGINATION_LIMIT);
             log.info(`Lu.ma: API returned ${entries.length} events for "${slug}"`);
 
             for (const entry of entries) {
                 const ev = entry.event;
+
+                if (seenEventIds.has(ev.api_id)) {
+                    log.debug(`Lu.ma: Skipping duplicate event ${ev.api_id}`);
+                    continue;
+                }
+                seenEventIds.add(ev.api_id);
                 const geo = ev.geo_address_info;
                 const isVirtual = ev.location_type === 'online';
 
@@ -91,6 +106,7 @@ export async function scrapeLumaEvents(input: ActorInput): Promise<number> {
                     source: 'luma',
                     title: ev.name,
                     url: `https://lu.ma/${ev.url}`,
+                    luma_event_api_id: ev.api_id,
                     start_date: ev.start_at,
                     end_date: ev.end_at,
                     timezone: ev.timezone,

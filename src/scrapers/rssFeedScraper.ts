@@ -6,8 +6,9 @@ import { HTTP_CONCURRENCY, HTTP_TIMEOUT } from '../config.js';
 import type { ActorInput, ArticleData } from '../types.js';
 import { parseDate } from '../utils/dateNormalization.js';
 import { extractArticleText } from '../utils/textExtraction.js';
+import { normalizeUrl } from '../utils/urlNormalization.js';
 
-export async function scrapeRssFeed(input: ActorInput, limit: number): Promise<number> {
+export async function scrapeRssFeed(input: ActorInput, limit: number, seenUrls: Set<string>): Promise<number> {
     if (limit <= 0) {
         return 0;
     }
@@ -116,9 +117,8 @@ export async function scrapeRssFeed(input: ActorInput, limit: number): Promise<n
         },
     });
 
-    // Add URLs to queue with RSS content in userData
-    const itemsToScrape = feed.items.slice(0, limit);
-    const requests = itemsToScrape
+    // Add URLs to queue with RSS content in userData, skipping duplicates
+    const requests = feed.items
         .map((item) => ({
             url: item.link || item.guid || '',
             userData: {
@@ -128,7 +128,17 @@ export async function scrapeRssFeed(input: ActorInput, limit: number): Promise<n
                 rssDescription: (item.contentSnippet || item.description || '').slice(0, 200),
             },
         }))
-        .filter((req) => req.url); // Filter out items without URLs
+        .filter((req) => {
+            if (!req.url) return false;
+            const normalized = normalizeUrl(req.url);
+            if (seenUrls.has(normalized)) {
+                log.debug('RSS: Skipping duplicate URL', { url: req.url });
+                return false;
+            }
+            seenUrls.add(normalized);
+            return true;
+        })
+        .slice(0, limit);
 
     await crawler.addRequests(requests);
     await crawler.run();

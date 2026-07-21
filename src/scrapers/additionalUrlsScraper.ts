@@ -5,8 +5,9 @@ import { HTTP_CONCURRENCY, HTTP_TIMEOUT } from '../config.js';
 import type { ActorInput, ArticleData } from '../types.js';
 import { parseDate } from '../utils/dateNormalization.js';
 import { extractArticleText } from '../utils/textExtraction.js';
+import { normalizeUrl } from '../utils/urlNormalization.js';
 
-export async function scrapeAdditionalUrls(input: ActorInput, limit: number): Promise<number> {
+export async function scrapeAdditionalUrls(input: ActorInput, limit: number, seenUrls: Set<string>): Promise<number> {
     if (!input.additionalUrls || input.additionalUrls.length === 0) {
         return 0;
     }
@@ -74,8 +75,15 @@ export async function scrapeAdditionalUrls(input: ActorInput, limit: number): Pr
         },
     });
 
-    // Add URLs to queue, respecting the limit
-    const urlsToScrape = input.additionalUrls.slice(0, limit);
+    // Add URLs to queue, skipping ones already scraped (e.g. via the RSS feed)
+    const urlsToScrape = input.additionalUrls
+        .filter((item) => {
+            const normalized = normalizeUrl(item.url);
+            if (seenUrls.has(normalized)) return false;
+            seenUrls.add(normalized);
+            return true;
+        })
+        .slice(0, limit);
     await crawler.addRequests(urlsToScrape.map((item) => ({ url: item.url })));
 
     await crawler.run();

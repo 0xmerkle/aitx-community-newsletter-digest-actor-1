@@ -12,6 +12,7 @@
             "published_date": { "type": "string", "description": "Article published date (ISO)" },
             "source_name": { "type": "string", "description": "Name of the article source" },
             "source": { "type": "string", "description": "Event source: 'luma' or 'meetup.com'" },
+            "luma_event_api_id": { "type": "string", "description": "Lu.ma event API ID for detail enrichment" },
             "start_date": { "type": "string", "description": "Event start date/time (ISO)" },
             "start_time": { "type": "string", "description": "Event start time" },
             "end_date": { "type": "string", "description": "Event end date/time (ISO)" },
@@ -36,7 +37,7 @@
             "transformation": {
                 "fields": [
                     "type", "headline", "title", "url", "description",
-                    "published_date", "source_name", "source", "start_date",
+                    "published_date", "source_name", "source", "luma_event_api_id", "start_date",
                     "timezone", "location", "city", "region", "host_name",
                     "guest_count", "is_free", "scraped_at"
                 ]
@@ -72,7 +73,7 @@
             "description": "Scraped events from Lu.ma and Meetup",
             "transformation": {
                 "fields": [
-                    "title", "url", "source", "start_date", "end_date",
+                    "title", "url", "source", "luma_event_api_id", "start_date", "end_date",
                     "timezone", "location", "venue_name", "city", "region",
                     "host_name", "guest_count", "is_free", "is_virtual", "scraped_at"
                 ]

@@ -5,31 +5,30 @@
     "properties": {
         "rssFeedUrl": {
             "title": "RSS Feed URL",
-            "type": "string",
             "description": "URL of the RSS feed to scrape articles from",
-            "editor": "textfield",
-            "example": "https://hnrss.org/newest"
+            "type": "string",
+            "editor": "textfield"
         },
         "additionalUrls": {
             "title": "Additional URLs",
-            "type": "array",
             "description": "Additional article URLs to scrape",
+            "type": "array",
             "editor": "requestListSources",
             "default": [],
             "prefill": []
         },
         "lumaEventUrls": {
             "title": "Lu.ma Event URLs",
-            "type": "array",
             "description": "Lu.ma city page URLs. The slug (e.g. 'austin' from lu.ma/austin) is mapped to a Discover API place ID to fetch events.",
+            "type": "array",
             "editor": "stringList",
             "default": ["https://lu.ma/austin", "https://lu.ma/houston"],
             "prefill": ["https://lu.ma/austin", "https://lu.ma/houston"]
         },
         "meetupCities": {
             "title": "Meetup Cities",
-            "type": "array",
             "description": "Cities to search for Meetup events",
+            "type": "array",
             "editor": "json",
             "default": [
                 { "city": "austin", "state": "tx" },
@@ -42,36 +41,27 @@
         },
         "meetupKeywords": {
             "title": "Meetup Keywords",
+            "description": "Comma-separated keywords to search Meetup events. Each keyword runs a separate search per city; results are deduplicated by event URL.",
             "type": "string",
-            "description": "Keywords to filter Meetup events",
             "editor": "textfield",
-            "default": "AI",
-            "example": "AI"
+            "default": "AI, machine learning, data science"
         },
         "meetupMaxResultsPerCity": {
             "title": "Meetup Max Results Per City",
+            "description": "Maximum number of Meetup events to retrieve per city, per keyword",
             "type": "integer",
-            "description": "Maximum number of Meetup events to retrieve per city",
-            "editor": "number",
-            "default": 15,
-            "minimum": 1,
-            "maximum": 100,
-            "unit": "events"
+            "default": 15
         },
         "maxArticles": {
             "title": "Max Articles",
-            "type": "integer",
             "description": "Maximum number of articles to scrape (applies to RSS + additional URLs combined)",
-            "editor": "number",
-            "default": 50,
-            "minimum": 0,
-            "unit": "articles"
+            "type": "integer",
+            "default": 50
         },
         "useProxies": {
             "title": "Use Proxies",
-            "type": "boolean",
             "description": "Use proxies for web scraping (Lu.ma uses a direct API and does not need proxies)",
-            "editor": "checkbox",
+            "type": "boolean",
             "default": true
         }
     },

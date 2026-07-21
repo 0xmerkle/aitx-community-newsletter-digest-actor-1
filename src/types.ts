@@ -26,6 +26,7 @@ export interface EventData {
     url: string;
     source: string;
     scraped_at: string;
+    luma_event_api_id?: string;
     description?: string;
     start_date?: string;
     start_time?: string;

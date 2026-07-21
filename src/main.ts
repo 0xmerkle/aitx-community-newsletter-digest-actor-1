@@ -26,10 +26,13 @@ try {
     let totalArticles = 0;
     let totalEvents = 0;
 
+    // Normalized article URLs already queued, shared across scrapers to prevent duplicates
+    const seenArticleUrls = new Set<string>();
+
     // Run scrapers with error isolation
     try {
         log.info('Starting RSS feed scraper...');
-        const rssCount = await scrapeRssFeed(input, input.maxArticles! - totalArticles);
+        const rssCount = await scrapeRssFeed(input, input.maxArticles! - totalArticles, seenArticleUrls);
         totalArticles += rssCount;
         log.info(`RSS scraper completed: ${rssCount} articles`);
     } catch (error) {
@@ -39,7 +42,7 @@ try {
     if (input.additionalUrls && input.additionalUrls.length > 0 && totalArticles < input.maxArticles!) {
         try {
             log.info('Starting additional URLs scraper...');
-            const additionalCount = await scrapeAdditionalUrls(input, input.maxArticles! - totalArticles);
+            const additionalCount = await scrapeAdditionalUrls(input, input.maxArticles! - totalArticles, seenArticleUrls);
             totalArticles += additionalCount;
             log.info(`Additional URLs completed: ${additionalCount} articles`);
         } catch (error) {

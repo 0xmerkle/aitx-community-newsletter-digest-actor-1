@@ -10,14 +10,24 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
     let totalEventsAdded = 0;
     const startDateRange = new Date().toISOString().split('T')[0];
 
-    for (const cityEntry of input.meetupCities) {
+    // Multiple keywords widen the pool so the synthesizer always has enough
+    // candidates to guarantee its minimum event count after filtering.
+    const keywords = (input.meetupKeywords || 'AI')
+        .split(',')
+        .map((k) => k.trim())
+        .filter(Boolean);
+    const seenEventUrls = new Set<string>();
+
+    const searches = input.meetupCities.flatMap((cityEntry) => keywords.map((keyword) => ({ cityEntry, keyword })));
+
+    for (const { cityEntry, keyword } of searches) {
         const city = toTitleCase(cityEntry.city);
 
         try {
             log.info('Meetup: Calling scraper actor', {
                 city,
                 state: cityEntry.state,
-                keywords: input.meetupKeywords,
+                keyword,
                 maxResults: input.meetupMaxResultsPerCity,
                 startDateRange,
             });
@@ -25,8 +35,9 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
             const run = await Actor.call('filip_cicvarek/meetup-scraper', {
                 city,
                 state: cityEntry.state || '',
-                country: 'US',
-                searchKeyword: input.meetupKeywords || '',
+                country: 'us',
+                searchKeyword: keyword,
+                eventType: 'PHYSICAL',
                 maxResults: input.meetupMaxResultsPerCity || 10,
                 startDateRange,
             });
@@ -67,6 +78,12 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
                     continue;
                 }
 
+                // Same event can come back for multiple keywords/cities
+                if (seenEventUrls.has(url)) {
+                    log.debug('Skipping duplicate event', { url });
+                    continue;
+                }
+
                 // Skip online/virtual events (in-person only per PRD)
                 const location = getLocation(item).toLowerCase();
                 if (location.includes('online') || location.includes('virtual')) {
@@ -82,16 +99,19 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
                     continue;
                 }
 
+                // The scraper returns ISO datetimes with offset (e.g. "2026-07-29T18:00:00-05:00")
+                // in `date`/`startDateTime`/`endDateTime` plus an IANA `timezone`.
                 const eventData: EventData = {
                     type: 'event',
                     title: item.title || item.name || item.eventName || 'Untitled Event',
                     url,
-                    start_date: item.date || item.eventDate || item.startDate,
-                    end_date: item.endDate,
+                    start_date: item.date || item.startDateTime || item.eventDate || item.startDate,
+                    end_date: item.endDateTime || item.endDate,
                     start_time: item.time || item.eventTime || item.startTime,
                     end_time: item.endTime,
+                    timezone: item.timezone,
                     location,
-                    venue_name: item.venueName || item.venue?.name || item.address,
+                    venue_name: item.venue?.name || item.venueName || item.address,
                     city: item.city || item.venue?.city || cityEntry.city,
                     state: item.state || item.venue?.state || cityEntry.state,
                     description: item.description || item.snippet || item.eventDescription,
@@ -101,6 +121,7 @@ export async function scrapeMeetupEvents(input: ActorInput): Promise<number> {
                 };
 
                 await Actor.pushData(eventData);
+                seenEventUrls.add(url);
                 eventsAdded++;
             }
 
